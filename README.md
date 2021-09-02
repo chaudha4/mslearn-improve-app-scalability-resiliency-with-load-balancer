@@ -1,31 +1,32 @@
+[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli)
 
-# Contributing
+[Use Azure CLI effectively](https://docs.microsoft.com/en-us/cli/azure/use-cli-effectively)
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+[Change the active subscription](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription)
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+[Install CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=script)
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-# Legal Notices
+```
+az --version
+az login
+az login --tenant chaudha7654298.onmicrosoft.com
 
-Microsoft and any contributors grant you a license to the Microsoft documentation and other content
-in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
-see the [LICENSE](LICENSE) file, and grant you a license to any code in the repository under the [MIT License](https://opensource.org/licenses/MIT), see the
-[LICENSE-CODE](LICENSE-CODE) file.
+az account show
 
-Microsoft, Windows, Microsoft Azure and/or other Microsoft products and services referenced in the documentation
-may be either trademarks or registered trademarks of Microsoft in the United States and/or other countries.
-The licenses for this project do not grant you rights to use any Microsoft names, logos, or trademarks.
-Microsoft's general trademark guidelines can be found at http://go.microsoft.com/fwlink/?LinkID=254653.
+az account tenant list
+az account subscription list
 
-Privacy information can be found at https://privacy.microsoft.com/en-us/
+az account set --subscription "f15bafdb-06d3-48f6-a076-b0a4a3173d36"
 
-Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
-or trademarks, whether by implication, estoppel or otherwise.
+az group list --output table
+
+rg=`az group list --query '[].name' --output tsv`
+loc=`az group list --query '[].location' --output tsv`
+vm=VM$loc$RANDOM
+
+bash create-high-availability-vm-with-sets.sh $rg
+
+az network vnet list --output table
+
+```
