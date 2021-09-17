@@ -17,7 +17,7 @@ az account show
 az account tenant list
 az account subscription list
 
-az account set --subscription "f15bafdb-06d3-48f6-a076-b0a4a3173d36"
+az account set --subscription "c60ae814-018d-48e5-bf8f-d6407b02e76f"
 
 az group list --output table
 

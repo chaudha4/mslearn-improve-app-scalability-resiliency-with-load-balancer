@@ -4,11 +4,13 @@
 
 
 USERNAME=azureuser
-PASSWORD=$(openssl rand -base64 32)
+PWRD=$(openssl rand -base64 32)
 RG=`az group list --query '[].name' --output tsv`
 LOC=`az group list --query '[].location' --output tsv`
 VM=myVM$RANDOM
-
+#
+echo $RG $LOC $PWRD
+#
 az vm create \
   --resource-group $RG \
   --name $VM \

@@ -1,51 +1,62 @@
 #!/bin/bash
 
+# Use Learn sandbox below
 # https://docs.microsoft.com/en-us/learn/modules/manage-virtual-machines-with-azure-cli/2-create-a-vm
 
+# https://docs.microsoft.com/en-us/azure/virtual-machines/linux/tutorial-create-vmss
 
 USER=azureuser
 PWRD=$(openssl rand -base64 32)
 RG=`az group list --query '[].name' --output tsv`
 LOC=`az group list --query '[].location' --output tsv`
-VM=myVM$RANDOM
 #
 echo $RG $LOC $PWRD
 #
 
-az vm create \
-  --resource-group $RG \
-  --name $VM \
-  --image UbuntuLTS \
-  --admin-username $USER \
-  --generate-ssh-keys \
-  --verbose   
-# --custom-data cloud-init.txt
-# --admin-password $PWRD \
-
 # Create a few VMs.
-for i in `seq 1 5`; do
-    echo '------------------------------------------'
-    echo 'Creating ' myVm$i
-    az vm create \
+for i in `seq 1 2`; do
+  az vm create \
     --resource-group $RG \
-    --name myVm$i \
+    --name VM$RANDOM \
     --image UbuntuLTS \
     --admin-username $USER \
     --generate-ssh-keys \
-    --verbose
+    --custom-data npm-init.txt \
+    --verbose   
 done
+#
 
 # Save the names of VMs created
 vmlist=$(az vm list -g $RG  -o tsv --query "[].name")
+iplist=$(az vm list -d -g $RG  --query [].publicIps -o tsv)
 
-# Open port 80 on all the VMs
+
+#
+
+# Open port on all the VMs for nodejs
 for vm in $vmlist; do
     echo Open port 80 for $vm
     az vm open-port \
     --port 80 \
     --resource-group $RG \
-    --name $vm
+    --name $vm \
+    --priority 101
 done
+#
+
+
+az network public-ip create \
+    --resource-group $RG \
+    --name myPublicIP
+
+# List IP of all the VMs
+for vm in $vmlist; do
+    #az vm list-ip-addresses --name $vm --output table
+    IP=$(az vm show -d -g $RG -n $vm --query publicIps)
+    echo $vm Public IP is: $IP
+done
+#
+
 
 
 # List all VMs
@@ -77,7 +88,7 @@ VMIP2=$(az vm show \
 echo $VMIP1 - $VMIP2
 
 
-ssh $$USER@$VMIP1
+ssh $USER@$VMIP1
 
 # az vm list -g $RG --query "[].id" -o tsv
 # az vm show -d -g $RG -n $VM
@@ -85,6 +96,18 @@ ssh $$USER@$VMIP1
 # az vm list-ip-addresses -g $RG -o table
 # az vm list -g $RG --query "[].vmId" -o tsv
 # az vm list-ip-addresses --ids $(az vm list -g $RG --query "[].vmId" -o tsv)
+
+
+# Delete all VMs
+for vm in $vmlist; do
+    echo Stopping $vm
+    az vm delete \
+        --resource-group $RG \
+        --name $vm \
+        --yes \
+        --no-wait 
+done
+#
 
 
 az vm list-sizes --location $LOC --output table
@@ -153,3 +176,6 @@ done
 
 
 
+az deployment group create \
+  --resource-group $RG \
+  --template-uri https://raw.githubusercontent.com/mspnp/samples/master/solutions/azure-hub-spoke/azuredeploy.json
